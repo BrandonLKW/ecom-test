@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const path = require("path");
+const productRouter = require("./routers/productRouter");
 
 const server: Express = express();
 
@@ -15,6 +16,7 @@ server.use(express.static(path.join(__dirname, "dist")));
 server.get("/test", (_req: Request, res: Response) => {
     res.json({ hello: "worldo" });  
 });
+server.use("/api/product", productRouter);
 
 //listen block
 const port = process.env.PORT || 3000;
