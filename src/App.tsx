@@ -15,7 +15,7 @@ function App() {
       <NavBar setShowCartModal={setShowCartModal}/>
       <Routes>
         {/* <Route path="/products" element={<ProductPage />}/> */}
-        <Route path="*" element={<ProductPage />}/>
+        <Route path="*" element={<ProductPage cartItemList={cartItemList} setCartItemList={setCartItemList}/>}/>
       </Routes>
       <CartModal showModal={showCartModal} setShowModal={setShowCartModal} cartItemList={cartItemList} />
     </div>

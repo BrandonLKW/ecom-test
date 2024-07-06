@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Alert, Button, Box, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, LinearProgress, TextField, Typography } from "@mui/material";
+import { Alert, Button, Box, Dialog, DialogTitle, DialogContent, DialogActions, LinearProgress, Typography } from "@mui/material";
 import { Cart } from "../../../models/Cart";
 import CartItem from "../CartItem/CartItem";
 
