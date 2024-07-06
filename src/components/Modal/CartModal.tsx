@@ -23,6 +23,7 @@ export default function CartModal({ showModal, setShowModal, setShowPaymentModal
     }
 
     const handleCheckout = async () => {
+        setShowWarning(false);
         setShowPaymentModal(true);
     }
 

@@ -5,6 +5,7 @@ dotenv.config();
 
 const path = require("path");
 const productRouter = require("./routers/productRouter");
+const orderRouter = require("./routers/orderRouter");
 
 const server: Express = express();
 
@@ -17,6 +18,7 @@ server.get("/test", (_req: Request, res: Response) => {
     res.json({ hello: "worldo" });  
 });
 server.use("/api/product", productRouter);
+server.use("/api/order", orderRouter);
 
 //listen block
 const port = process.env.PORT || 3000;

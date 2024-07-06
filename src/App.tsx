@@ -1,11 +1,14 @@
-import { useState } from 'react' 
-import { Route, Routes } from "react-router-dom";
-import NavBar from '../src/components/NavBar'
-import ProductPage from './pages/ProductPage/ProductPage'
+import { useState } from 'react' ;
+import { Route, Routes } from 'react-router-dom';
+import * as orderService from '../util/order-service';
+import NavBar from '../src/components/NavBar';
+import ProductPage from './pages/ProductPage/ProductPage';
 import CartModal from './components/Modal/CartModal';
-import { Cart } from '../models/Cart';
-import "./App.css";
 import PaymentModal from './components/Modal/PaymentModal';
+import { Cart } from '../models/Cart';
+import { Order } from '../models/Order';
+import { OrderItem } from '../models/OrderItem';
+import "./App.css";
 
 function App() {
   const [cartItemList, setCartItemList] = useState<Cart[]>([])
@@ -13,6 +16,28 @@ function App() {
   const [showPaymentModal, setShowPaymentModal] = useState<boolean>(false);
 
   const submitOrder = () => {
+    //Counting sum of items and creating order item objects
+    let cartItemSum = 0;
+    const orderItemList = [];
+    for (const cartItem of cartItemList){
+      cartItemSum += cartItem.calculateSum();
+      orderItemList.push(new OrderItem("", "", cartItem.product.unit_price, cartItem.quantity, cartItem.product.product_id));
+    }
+    //Create order object
+    const newOrder = new Order();
+    newOrder.user_id = "1";
+    newOrder.total_cost = cartItemSum;
+    newOrder.status = "PENDING";
+    newOrder.orderItemList = orderItemList;
+
+    //Push to db
+    const trySubmitOrder = async () => {
+      const response = await orderService.addOrder(newOrder);
+      console.log(response);
+    }
+    trySubmitOrder();
+
+    //Clear after successful transaction
     setShowCartModal(false);
     setShowPaymentModal(false);
   }
