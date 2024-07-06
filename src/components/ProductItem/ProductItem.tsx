@@ -6,7 +6,6 @@ type ProductItemProps = {
 };
 
 export default function ProductItem({ product } : ProductItemProps){
-    const filePath = "../images/";
     
     const handleTextChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         
@@ -14,7 +13,7 @@ export default function ProductItem({ product } : ProductItemProps){
 
     return (
         <Stack spacing={1}>
-            <img height="250" width="250" src={filePath + product.image}/>
+            <img height="250" width="250" src={product.image}/>
             <Typography variant="h6">{product.name}</Typography>
             <Typography variant="h6">Unit Price: {product.unit_price}</Typography>
             <Typography variant="h6">Available Quantity {product.stock_quantity}</Typography>

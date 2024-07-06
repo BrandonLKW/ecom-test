@@ -1,13 +1,18 @@
 import * as React from "react";
 import { useNavigate } from "react-router-dom";
 import { AppBar, Box, Button, Toolbar, Tooltip, IconButton, Typography, Menu, MenuItem, Container } from "@mui/material"
-
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
 
 const pages = ['Home', 'Products'];
 const adminPages = ['Home', 'Products', 'Orders', 'History'];
 const settings = ['Login', 'Manage Account', 'Logout'];
 
-export default function NavBar(props: any){
+type NavBarProps = {
+    setShowCartModal: (show: boolean) => void;
+};
+
+export default function NavBar({ setShowCartModal }: NavBarProps){
     const navigate = useNavigate();
     const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
     const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
@@ -63,6 +68,13 @@ export default function NavBar(props: any){
                                 {page}
                             </Button>
                         ))}
+                    </Box>
+                    <Box sx={{ flexGrow: 0 }}>
+                        <Tooltip title="View Cart">
+                            <IconButton onClick={() => {setShowCartModal(true)}}>
+                                <ShoppingCartIcon />
+                            </IconButton>
+                        </Tooltip>
                     </Box>
                     <Box sx={{ flexGrow: 0 }}>
                         <Tooltip title="Open settings">
