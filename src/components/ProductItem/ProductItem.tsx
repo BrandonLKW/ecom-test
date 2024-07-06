@@ -31,7 +31,7 @@ export default function ProductItem({ product, addProductToCart, selectedQuantit
             <Typography variant="h6">{product.name}</Typography>
             <Typography variant="h6">Unit Price: {product.unit_price}</Typography>
             <Typography variant="h6">Available Quantity {product.stock_quantity}</Typography>
-            <TextField label="Added" name="cart" variant="outlined" value={inputQuantity} onChange={checkQuantityInput}/>
+            <TextField label="Added" name="cart" variant="outlined" type="number" value={inputQuantity} onChange={checkQuantityInput}/>
             <Button onClick={() => {handleUpdateButton()}}>Update Cart</Button>
             <Button>Restock</Button>
         </Stack>

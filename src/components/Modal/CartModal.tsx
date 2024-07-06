@@ -1,18 +1,17 @@
 import { useState } from "react";
-import { Alert, Button, Box, Dialog, DialogTitle, DialogContent, DialogActions, LinearProgress, Typography } from "@mui/material";
+import { Alert, Button, Dialog, DialogTitle, DialogContent, DialogActions, Typography } from "@mui/material";
 import { Cart } from "../../../models/Cart";
 import CartItem from "../CartItem/CartItem";
 
 type CartModalProps = {
     showModal: boolean;
     setShowModal: (show: boolean) => void;
+    setShowPaymentModal: (show: boolean) => void;
     cartItemList: Cart[];
 };
 
-export default function CartModal({ showModal, setShowModal, cartItemList}: CartModalProps){
+export default function CartModal({ showModal, setShowModal, setShowPaymentModal, cartItemList}: CartModalProps){
     const [showWarning, setShowWarning] = useState<boolean>(false);
-    const [showLoading, setShowLoading] = useState<boolean>(false);
-    
 
     const handleClose = () => {
         setShowModal(false);
@@ -24,6 +23,7 @@ export default function CartModal({ showModal, setShowModal, cartItemList}: Cart
     }
 
     const handleCheckout = async () => {
+        setShowPaymentModal(true);
     }
 
     const calculateTotalCartCost = () => {
@@ -58,10 +58,7 @@ export default function CartModal({ showModal, setShowModal, cartItemList}: Cart
                     action={<Button onClick={() => {handleCheckout()}} color="inherit" size="small">Yes, Checkout!</Button>}>
                     Confirm to Checkout?
                 </Alert>
-                <Box sx={{ width: '100%', display: showLoading ? "" : "none"}}>
-                    <LinearProgress/>
-                </Box>
             </Dialog>
         </>
-        );
+    );
 }
