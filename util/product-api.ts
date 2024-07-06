@@ -1,0 +1,28 @@
+import { Product } from "../models/Product";
+
+const BASE_URL = "/api/product/";
+
+export async function getAllProductTypes(){
+    const res = await fetch(BASE_URL + "type", {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+    })
+    if (res.ok) {
+        return res.json();
+    } else {
+        throw new Error("Invalid Call");
+    }
+}
+
+export async function getAllProductByType(type: string){
+    const res = await fetch(BASE_URL + "type/product", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({"product_type": type}),
+    })
+    if (res.ok) {
+        return res.json();
+    } else {
+        throw new Error("Invalid Call");
+    }
+}
