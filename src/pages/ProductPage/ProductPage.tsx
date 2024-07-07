@@ -14,6 +14,7 @@ type ProductPageProps = {
 
 export default function ProductPage({ cartItemList, setCartItemList }: ProductPageProps){
     const [productTypeList, setProductTypeList] = useState<string[]>([]);
+    const [selectedProductType, setSelectedProductType] = useState<string>("");
     const [productList, setProductList] = useState<Product[]>([]);
     const [showModal, setShowModal] = useState<boolean>(false);
     const [showAddSuccess, setShowAddSuccess] = useState<boolean>(false);
@@ -33,8 +34,18 @@ export default function ProductPage({ cartItemList, setCartItemList }: ProductPa
         loadProductTypeList();
     }, []);
 
+    useEffect(() => {
+        const reloadProducts = async () => {
+            if (cartItemList.length === 0 && selectedProductType){
+                await loadSelectedProductType(selectedProductType);
+            }
+        }
+        reloadProducts();
+    }, [cartItemList]);
+
     const loadSelectedProductType = async (productType: string) => {
         if (productType){
+            setSelectedProductType(productType);
             const response = await productService.getAllProductByType(productType);
             if (response){
                 const result = [];

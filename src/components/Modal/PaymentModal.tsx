@@ -1,5 +1,6 @@
 import { useState } from 'react' 
-import { Alert, Button, Box, Dialog, DialogTitle, DialogContent, DialogActions, LinearProgress, TextField } from "@mui/material";
+import { Button, Box, Dialog, DialogTitle, DialogContent, DialogActions, LinearProgress, TextField } from "@mui/material";
+import "./Modal.css";
 
 type PaymentModalProps = {
     showModal: boolean;
@@ -43,20 +44,22 @@ export default function PaymentModal({ showModal, setShowModal, submitOrder}: Pa
                 }}>
                 <DialogTitle>Payment Confirmation</DialogTitle>
                 <DialogContent>
-                    <div>
-                        <Button onClick={() => {displayOption1()}}>Option #1</Button>
-                        <Button onClick={() => {displayOption2()}}>Option #2</Button>
+                    <div className='flexContainer'>
+                        <div>
+                            <Button onClick={() => {displayOption1()}}>Option #1</Button>
+                            <Button onClick={() => {displayOption2()}}>Option #2</Button>
+                        </div>
+                        {showOption1 ? 
+                        <div className='flexContainer'>
+                            <TextField label="Card Number" variant="outlined"/>
+                            <TextField label="CVV" variant="outlined"/>
+                            <TextField label="Name" variant="outlined"/>
+                        </div> : <></>}
+                        {showOption2 ? 
+                        <div className='flexContainer'>
+                            <img src="../images/qr.png"/>
+                        </div> : <></>}
                     </div>
-                    {showOption1 ? 
-                    <div>
-                        <TextField label="Card Number" variant="outlined"/>
-                        <TextField label="CVV" variant="outlined"/>
-                        <TextField label="Name" variant="outlined"/>
-                    </div> : <></>}
-                    {showOption2 ? 
-                    <div>
-                        <img src="../images/qr.png"/>
-                    </div> : <></>}
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={() => {setShowModal(false)}}>Cancel</Button>

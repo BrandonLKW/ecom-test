@@ -16,7 +16,7 @@ function App() {
   return (
     <UserContext.Provider value={user}>
       <div className="appbody">
-        <NavBar cartItemList={cartItemList} setUser={setUser}/>
+        <NavBar cartItemList={cartItemList} setCartItemList={setCartItemList} setUser={setUser}/>
         <Routes>
           <Route path="/products" element={<ProductPage cartItemList={cartItemList} setCartItemList={setCartItemList}/>}/>
           <Route path="/orders" element={<OrdersPage />}/>

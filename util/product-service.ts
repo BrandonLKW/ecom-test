@@ -11,6 +11,11 @@ export async function getAllProductByType(type: string){
     return res;
 }
 
+export async function getProductStock(productId: string){
+    const res = await productAPI.getProductStock(productId);
+    return res;
+}
+
 export async function updateProductStock(productId: string, newQuantity: number){
     const res = await productAPI.updateProductStock(productId, newQuantity);
     return res;

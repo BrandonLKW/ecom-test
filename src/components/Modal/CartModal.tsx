@@ -1,7 +1,9 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { UserContext } from "../../App";
 import { Alert, Button, Dialog, DialogTitle, DialogContent, DialogActions, Typography } from "@mui/material";
 import { Cart } from "../../../models/Cart";
 import CartItem from "../CartItem/CartItem";
+import "./Modal.css";
 
 type CartModalProps = {
     showModal: boolean;
@@ -11,6 +13,7 @@ type CartModalProps = {
 };
 
 export default function CartModal({ showModal, setShowModal, setShowPaymentModal, cartItemList}: CartModalProps){
+    const user = useContext(UserContext);
     const [showWarning, setShowWarning] = useState<boolean>(false);
 
     const handleClose = () => {
@@ -43,17 +46,21 @@ export default function CartModal({ showModal, setShowModal, setShowPaymentModal
                 PaperProps={{
                     component: "form",
                     onSubmit: handleSubmit
-                }}>
-                <DialogTitle>Cart Items</DialogTitle>
+                }} 
+                fullWidth 
+                maxWidth="md">
+                <DialogTitle><Typography variant="h4">Cart Items</Typography></DialogTitle>
                 <DialogContent>
-                    <div>
-                        {cartItemList.map((cartItem) => (<CartItem cartItem={cartItem}/>))}
+                    <div className="cartModal">
+                        <div>
+                            {cartItemList.map((cartItem) => (<CartItem cartItem={cartItem}/>))}
+                        </div>
+                        <Typography variant="h5">{`Total sum: $${calculateTotalCartCost()}`}</Typography>
                     </div>
-                    <Typography variant="h5">{calculateTotalCartCost()}</Typography>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleClose}>Continue Shopping</Button>
-                    <Button type="submit">Checkout</Button>
+                    {user.user_id === "0" ? <></> : <Button type="submit">Checkout</Button>}
                 </DialogActions>
                 <Alert variant="outlined" severity="error" sx={{display: showWarning ? "" : "none"}}
                     action={<Button onClick={() => {handleCheckout()}} color="inherit" size="small">Yes, Checkout!</Button>}>
@@ -62,4 +69,6 @@ export default function CartModal({ showModal, setShowModal, setShowPaymentModal
             </Dialog>
         </>
     );
+
+    //https://stackoverflow.com/questions/47181399/dialog-width-material-ui (change dialog size)
 }

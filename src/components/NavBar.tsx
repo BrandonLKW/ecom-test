@@ -2,7 +2,8 @@ import * as React from "react";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../App";
 import * as orderService from '../../util/order-service';
-import { AppBar, Box, Button, Toolbar, Tooltip, IconButton, Typography, Menu, MenuItem, Container } from "@mui/material"
+import * as productService from "../../util/product-service";
+import { Alert, AppBar, Box, Button, Dialog, Toolbar, Tooltip, IconButton, Typography, Menu, MenuItem, Container } from "@mui/material"
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import LoginFormModal from "./Modal/LoginFormModal";
 import SignUpFormModal from "./Modal/SignUpFormModal";
@@ -19,18 +20,24 @@ const settings = ['Logout'];
 
 type NavBarProps = {
     cartItemList: Cart[];
+    setCartItemList: (cartItemList: Cart[]) => void;
     setUser: (user: User) => void;
 };
 
-export default function NavBar({ cartItemList, setUser }: NavBarProps){
+export default function NavBar({ cartItemList, setCartItemList, setUser }: NavBarProps){
     const navigate = useNavigate();
     const user = React.useContext(UserContext);
     const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
     const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
+    const [showModal, setShowModal] = React.useState<boolean>(false);
     const [showLoginModal, setShowLoginModal] = React.useState<boolean>(false);
     const [showSignupModal, setShowSignupModal] = React.useState<boolean>(false);
     const [showCartModal, setShowCartModal] = React.useState<boolean>(false);
     const [showPaymentModal, setShowPaymentModal] = React.useState<boolean>(false);
+    const [showError, setShowError] = React.useState<boolean>(false);
+    const [errorMsg, setErrorMsg] = React.useState<string>("");
+    const [showSuccess, setShowSuccess] = React.useState<boolean>(false);
+    const [successMsg, setSuccessMsg] = React.useState<string>("");
 
     const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorElNav(event.currentTarget);
@@ -76,31 +83,73 @@ export default function NavBar({ cartItemList, setUser }: NavBarProps){
         }
     }
 
-    const submitOrder = () => {
+    const resetWarnings = () => {
+        setShowModal(false);
+        setShowError(false);
+        setErrorMsg("");
+        setShowSuccess(false);
+        setSuccessMsg("");
+    }
+
+    const submitOrder = async () => {
         //Counting sum of items and creating order item objects
         let cartItemSum = 0;
         const orderItemList = [];
         for (const cartItem of cartItemList){
-          cartItemSum += cartItem.calculateSum();
-          orderItemList.push(new OrderItem("", "", cartItem.product.unit_price, cartItem.quantity, cartItem.product.product_id));
+            //Check db to ensure stock quantity is enough
+            const quantityCheck = await productService.getProductStock(cartItem.product.product_id);
+            //Break and return error if any item is under
+            if (quantityCheck){
+                if (quantityCheck[0].stock_quantity < cartItem.quantity){
+                    setShowModal(true);
+                    setShowError(true);
+                    setErrorMsg(`Not enough quantity left for ${cartItem.product.name}. Please refresh and choose a different amount.`);
+                    return;
+                }
+                cartItem.product.stock_quantity = quantityCheck[0].stock_quantity;
+            } else{
+                //db query error
+                setShowModal(true);
+                setShowError(true);
+                setErrorMsg(`Error checking stock for ${cartItem.product.name}. Please refresh and try again.`);
+                return;
+            }
+            //Otherwise continue
+            cartItemSum += cartItem.calculateSum();
+            orderItemList.push(new OrderItem("", "", cartItem.product.unit_price, cartItem.quantity, cartItem.product.product_id));
         }
         //Create order object
         const newOrder = new Order();
-        newOrder.user_id = "1";
+        newOrder.user_id = user.user_id;
         newOrder.total_cost = cartItemSum;
         newOrder.status = "PENDING";
         newOrder.orderItemList = orderItemList;
-    
         //Push to db
         const trySubmitOrder = async () => {
-          const response = await orderService.addOrder(newOrder);
+            const orderResponse = await orderService.addOrder(newOrder);
+            if (orderResponse){
+                //Update product stock after successful order
+                for (const cartItem of cartItemList){
+                    const stockUpdate = await productService.updateProductStock(cartItem.product.product_id, (cartItem.product.stock_quantity - cartItem.quantity));
+                    //No error checks for now, assume all successful updates
+                }
+                setCartItemList([]);
+            } else{
+                //db query error
+                setShowModal(true);
+                setShowError(true);
+                setErrorMsg(`Error adding order. Please refresh and try again.`);
+            }
         }
         trySubmitOrder();
     
-        //Clear after successful transaction
+        //After successful transaction
         setShowCartModal(false);
         setShowPaymentModal(false);
-      }
+        setShowModal(true);
+        setShowSuccess(true);
+        setSuccessMsg("Order successfully placed! The shop will start preparing your delivery.")
+    }
     
     return (
         <AppBar>
@@ -162,6 +211,11 @@ export default function NavBar({ cartItemList, setUser }: NavBarProps){
             <SignUpFormModal showModal={showSignupModal} setShowModal={setShowSignupModal} setShowSecModal={setShowLoginModal} setUser={setUser}/>
             <CartModal showModal={showCartModal} setShowModal={setShowCartModal} setShowPaymentModal={setShowPaymentModal} cartItemList={cartItemList} />
             <PaymentModal showModal={showPaymentModal} setShowModal={setShowPaymentModal} submitOrder={submitOrder}/>
+            <Dialog open={showModal}
+                    onClose={() => {resetWarnings()}}>
+                <Alert severity="success" sx={{display: showSuccess ? "" : "none"}}>{successMsg}</Alert>
+                <Alert severity="error" sx={{display: showError ? "" : "none"}}>{errorMsg}</Alert>
+            </Dialog>
         </AppBar>
     );
 }
