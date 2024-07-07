@@ -1,6 +1,9 @@
-import { Button, Stack, TextField, Typography } from "@mui/material";
+import { useContext } from "react";
+import { UserContext } from "../../App";
+import { Alert, Button, Stack, TextField, Typography } from "@mui/material";
 import { Product } from "../../../models/Product"
 import { useEffect, useState } from "react";
+import RestockModal from "../Modal/RestockModal";
 import "./ProductItem.css";
 
 type ProductItemProps = {
@@ -10,10 +13,14 @@ type ProductItemProps = {
 };
 
 export default function ProductItem({ product, addProductToCart, selectedQuantity } : ProductItemProps){
+    const user = useContext(UserContext);
     const [inputQuantity, setInputQuantity] = useState<number>(0);
+    const [showRestockModal, setShowRestockModal] = useState<boolean>(false);
+    const [showRestockSuccess, setShowRestockSuccess] = useState<boolean>(false);
 
     useEffect(() => {
         setInputQuantity(selectedQuantity);
+        setShowRestockSuccess(false)
     }, [selectedQuantity]);
 
     const checkQuantityInput = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -33,8 +40,12 @@ export default function ProductItem({ product, addProductToCart, selectedQuantit
             <Typography variant="h6">{`Unit Price: $${product.unit_price}`}</Typography>
             <Typography variant="h6">{`Available Quantity: ${product.stock_quantity}`}</Typography>
             <TextField label="In Cart" name="cart" variant="outlined" type="number" value={inputQuantity} onChange={checkQuantityInput}/>
-            <Button variant="contained" onClick={() => {handleUpdateButton()}}>Update Cart</Button>
-            <Button variant="contained">Restock</Button>
+            <Button style={{display: user.account_type === "RESTRICTED" ? "none" : "" }} variant="contained" onClick={() => {handleUpdateButton()}}>Update Cart</Button>
+            <Button style={{display: user.account_type === "RESTRICTED" ? "" : "none" }} variant="contained" onClick={() => {setShowRestockModal(true)}}>Restock</Button>
+            <RestockModal showModal={showRestockModal} setShowModal={setShowRestockModal} setShowRestockSuccess={setShowRestockSuccess} product={product}/>
+            <Alert variant="outlined" severity="success" sx={{display: showRestockSuccess ? "" : "none"}} onClose={() => {setShowRestockSuccess(false)}}>
+                Stock updated successfully!
+            </Alert>
         </Stack>
     );
 }

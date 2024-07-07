@@ -8,5 +8,10 @@ export async function getAllProductTypes(){
 
 export async function getAllProductByType(type: string){
     const res = await productAPI.getAllProductByType(type);
-    return res
+    return res;
+}
+
+export async function updateProductStock(productId: string, newQuantity: number){
+    const res = await productAPI.updateProductStock(productId, newQuantity);
+    return res;
 }

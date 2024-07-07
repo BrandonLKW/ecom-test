@@ -21,7 +21,19 @@ const getAllProductByTypes = async (req, res) => {
     }
 }
 
+const updateProductStock = async (req, res) => {
+    try{
+        const { product_id, new_quantity } = req.body;
+        const queryStr = `UPDATE public.product SET stock_quantity = ${new_quantity} WHERE public.product.product_id = ${product_id}`;
+        const response = await productdb.query(queryStr, "");
+        res.status(201).json(response.rows);
+    } catch (error){
+        res.status(500).json({ error });
+    }
+}
+
 module.exports = {
     getAllTypes, 
-    getAllProductByTypes
+    getAllProductByTypes,
+    updateProductStock
 };

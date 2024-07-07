@@ -20,6 +20,7 @@
 .productpagecol1 {
     grid-area: leftpanel;
     margin-left: 5%;
+    min-height: 80vh;
     max-height: 80vh;
     display: flex;
     flex-direction: column;
@@ -36,6 +37,7 @@
     grid-area: rightpanel;
     margin-left: 5%;
     margin-right: 5%;
+    min-height: 80vh;
     max-height: 80vh;
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;

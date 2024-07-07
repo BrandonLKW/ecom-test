@@ -42,7 +42,6 @@ export default function NavBar({ cartItemList, setUser }: NavBarProps){
     };
 
     const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
-        console.log(user);
         setAnchorElUser(event.currentTarget);
     };
 
