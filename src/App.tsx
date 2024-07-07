@@ -3,6 +3,7 @@ import { Route, Routes } from 'react-router-dom';
 import * as orderService from '../util/order-service';
 import NavBar from '../src/components/NavBar';
 import ProductPage from './pages/ProductPage/ProductPage';
+import OrdersPage from './pages/OrdersPage/OrdersPage';
 import CartModal from './components/Modal/CartModal';
 import PaymentModal from './components/Modal/PaymentModal';
 import { Cart } from '../models/Cart';
@@ -46,7 +47,8 @@ function App() {
     <div className="appbody">
       <NavBar setShowCartModal={setShowCartModal}/>
       <Routes>
-        {/* <Route path="/products" element={<ProductPage />}/> */}
+        <Route path="/products" element={<ProductPage cartItemList={cartItemList} setCartItemList={setCartItemList}/>}/>
+        <Route path="/orders" element={<OrdersPage />}/>
         <Route path="*" element={<ProductPage cartItemList={cartItemList} setCartItemList={setCartItemList}/>}/>
       </Routes>
       <CartModal showModal={showCartModal} setShowModal={setShowCartModal} setShowPaymentModal={setShowPaymentModal} cartItemList={cartItemList} />

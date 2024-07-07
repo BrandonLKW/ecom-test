@@ -1,12 +1,13 @@
 import { List, ListItemButton, ListItemText } from "@mui/material";
+import { Order } from "../../../models/Order";
 
-type SidebarProps = {
-    barList: string[];
-    buttonOnClick: (productType: string) => void;
+type OrderSidebarProps = {
+    barList: Order[];
+    buttonOnClick: (order: Order) => void;
 };
 
 
-export default function Sidebar ({ barList, buttonOnClick }: SidebarProps){
+export default function OrderSidebar ({ barList, buttonOnClick }: OrderSidebarProps){
 
     return (
         <List>
@@ -14,7 +15,7 @@ export default function Sidebar ({ barList, buttonOnClick }: SidebarProps){
                 <div>
                     <ListItemButton 
                         onClick={() => buttonOnClick(item)}>
-                        <ListItemText primary={item} />
+                        <ListItemText primary={`Order #${item.order_id}`} />
                     </ListItemButton>
                 </div>
             ))}

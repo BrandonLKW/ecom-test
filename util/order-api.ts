@@ -14,3 +14,29 @@ export async function addOrder(order: Order){
         throw new Error("Invalid Call");
     }
 }
+
+export async function getOrdersByUserId(userId: string){
+    const res = await fetch(BASE_URL + "find/user", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({user_id: userId}),
+    })
+    if (res.ok) {
+        return res.json();
+    } else {
+        throw new Error("Invalid Call");
+    }
+}
+
+export async function getOrderItemsByOrderId(orderId: string){
+    const res = await fetch(BASE_URL + "find/orderitem", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({order_id: orderId}),
+    })
+    if (res.ok) {
+        return res.json();
+    } else {
+        throw new Error("Invalid Call");
+    }
+}

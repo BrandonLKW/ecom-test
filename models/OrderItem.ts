@@ -1,9 +1,12 @@
+import { Product } from "./Product";
+
 export class OrderItem{
     order_item_id: string = "";
     order_id: string = "";
     unit_price: number = 0;
     quantity: number = 0;
     product_id: string = "";
+    product: Product = new Product();
 
     constructor(order_item_id?: string, order_id?: string, unit_price?: number, quantity?: number, product_id?: string){
         if (order_item_id){

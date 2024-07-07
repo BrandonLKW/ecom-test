@@ -87,21 +87,21 @@ export default function ProductPage({ cartItemList, setCartItemList }: ProductPa
         setShowAddError(false);
     };
 
-return (
-    <div className="productpage">
-        
-        <div className="productpagecol1">
-            <Sidebar barList={productTypeList} loadSelectedProductType={loadSelectedProductType}/>
+    return (
+        <div className="productpage">
+            
+            <div className="productpagecol1">
+                <Sidebar barList={productTypeList} buttonOnClick={loadSelectedProductType}/>
+            </div>
+            <div className="productpagecol2">
+                {productList?.map((product) => (<ProductItem product={product} addProductToCart={addProductToCart} selectedQuantity={checkSelectedQuantity(product)}/>))}
+            </div>
+            <Dialog open={showModal}
+                    onClose={() => {setShowModal(false)}}>
+                <Alert severity="success" sx={{display: showAddSuccess ? "" : "none"}}>Product successfully added to Cart!</Alert>
+                <Alert severity="error" sx={{display: showAddError ? "" : "none"}}>Unable to add product to Cart, please enter the quantity first.</Alert>
+            </Dialog>
         </div>
-        <div className="productpagecol2">
-            {productList?.map((product) => (<ProductItem product={product} addProductToCart={addProductToCart} selectedQuantity={checkSelectedQuantity(product)}/>))}
-        </div>
-        <Dialog open={showModal}
-                onClose={() => {setShowModal(false)}}>
-            <Alert severity="success" sx={{display: showAddSuccess ? "" : "none"}}>Product successfully added to Cart!</Alert>
-            <Alert severity="error" sx={{display: showAddError ? "" : "none"}}>Unable to add product to Cart, please enter the quantity first.</Alert>
-        </Dialog>
-    </div>
-)
+    )
     
 }
