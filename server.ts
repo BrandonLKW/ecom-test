@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const path = require("path");
+const userRouter = require("./routers/userRouter");
 const productRouter = require("./routers/productRouter");
 const orderRouter = require("./routers/orderRouter");
 
@@ -17,6 +18,7 @@ server.use(express.static(path.join(__dirname, "dist")));
 server.get("/test", (_req: Request, res: Response) => {
     res.json({ hello: "worldo" });  
 });
+server.use("/api/user", userRouter)
 server.use("/api/product", productRouter);
 server.use("/api/order", orderRouter);
 

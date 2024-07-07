@@ -1,21 +1,36 @@
 import * as React from "react";
 import { useNavigate } from "react-router-dom";
+import { UserContext } from "../App";
+import * as orderService from '../../util/order-service';
 import { AppBar, Box, Button, Toolbar, Tooltip, IconButton, Typography, Menu, MenuItem, Container } from "@mui/material"
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
+import LoginFormModal from "./Modal/LoginFormModal";
+import SignUpFormModal from "./Modal/SignUpFormModal";
+import CartModal from '../components/Modal/CartModal';
+import PaymentModal from '../components/Modal/PaymentModal';
+import { Cart } from '../../models/Cart';
+import { User } from "../../models/User";
+import { Order } from "../../models/Order";
+import { OrderItem } from "../../models/OrderItem";
 
 const pages = ['Home', 'Products'];
 const adminPages = ['Home', 'Products', 'Orders', 'History'];
-const settings = ['Login', 'Manage Account', 'Logout'];
+const settings = ['Logout'];
 
 type NavBarProps = {
-    setShowCartModal: (show: boolean) => void;
+    cartItemList: Cart[];
+    setUser: (user: User) => void;
 };
 
-export default function NavBar({ setShowCartModal }: NavBarProps){
+export default function NavBar({ cartItemList, setUser }: NavBarProps){
     const navigate = useNavigate();
+    const user = React.useContext(UserContext);
     const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
     const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
+    const [showLoginModal, setShowLoginModal] = React.useState<boolean>(false);
+    const [showSignupModal, setShowSignupModal] = React.useState<boolean>(false);
+    const [showCartModal, setShowCartModal] = React.useState<boolean>(false);
+    const [showPaymentModal, setShowPaymentModal] = React.useState<boolean>(false);
 
     const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorElNav(event.currentTarget);
@@ -27,12 +42,19 @@ export default function NavBar({ setShowCartModal }: NavBarProps){
     };
 
     const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
+        console.log(user);
         setAnchorElUser(event.currentTarget);
     };
 
     const handleCloseUserMenu = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorElUser(null);
-        navigatePage(event.currentTarget.outerText);
+        switch (event.currentTarget.outerText.toUpperCase()){
+            case "LOGOUT":
+                setUser(new User());
+                break;
+            default:
+                break;
+        }
     };
 
     const navigatePage = (page: string) => {
@@ -54,6 +76,32 @@ export default function NavBar({ setShowCartModal }: NavBarProps){
                 break;
         }
     }
+
+    const submitOrder = () => {
+        //Counting sum of items and creating order item objects
+        let cartItemSum = 0;
+        const orderItemList = [];
+        for (const cartItem of cartItemList){
+          cartItemSum += cartItem.calculateSum();
+          orderItemList.push(new OrderItem("", "", cartItem.product.unit_price, cartItem.quantity, cartItem.product.product_id));
+        }
+        //Create order object
+        const newOrder = new Order();
+        newOrder.user_id = "1";
+        newOrder.total_cost = cartItemSum;
+        newOrder.status = "PENDING";
+        newOrder.orderItemList = orderItemList;
+    
+        //Push to db
+        const trySubmitOrder = async () => {
+          const response = await orderService.addOrder(newOrder);
+        }
+        trySubmitOrder();
+    
+        //Clear after successful transaction
+        setShowCartModal(false);
+        setShowPaymentModal(false);
+      }
     
     return (
         <AppBar>
@@ -78,9 +126,14 @@ export default function NavBar({ setShowCartModal }: NavBarProps){
                     </Box>
                     <Box sx={{ flexGrow: 0 }}>
                         <Tooltip title="Open settings">
+                            {user.user_id === "0" ? 
+                            <Button onClick={() => setShowLoginModal(true)} sx={{ my: 2, color: 'white', display: 'block' }}>
+                                Login here!
+                            </Button> 
+                            : 
                             <Button onClick={handleOpenUserMenu} sx={{ my: 2, color: 'white', display: 'block' }}>
-                                Account
-                            </Button>
+                                {`${user.name}`} 
+                            </Button>}
                         </Tooltip>
                         <Menu
                             sx={{ mt: '45px' }}
@@ -96,8 +149,7 @@ export default function NavBar({ setShowCartModal }: NavBarProps){
                                 horizontal: 'right',
                             }}
                             open={Boolean(anchorElUser)}
-                            onClose={handleCloseUserMenu}
-                            >
+                            onClose={handleCloseUserMenu}>
                             {settings.map((setting) => (
                                 <MenuItem key={setting} onClick={handleCloseUserMenu}>
                                     <Typography textAlign="center">{setting}</Typography>
@@ -107,6 +159,10 @@ export default function NavBar({ setShowCartModal }: NavBarProps){
                     </Box>
                 </Toolbar>
             </Container>
+            <LoginFormModal showModal={showLoginModal} setShowModal={setShowLoginModal} setShowSecModal={setShowSignupModal} setUser={setUser}/>
+            <SignUpFormModal showModal={showSignupModal} setShowModal={setShowSignupModal} setShowSecModal={setShowLoginModal} setUser={setUser}/>
+            <CartModal showModal={showCartModal} setShowModal={setShowCartModal} setShowPaymentModal={setShowPaymentModal} cartItemList={cartItemList} />
+            <PaymentModal showModal={showPaymentModal} setShowModal={setShowPaymentModal} submitOrder={submitOrder}/>
         </AppBar>
     );
 }
