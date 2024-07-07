@@ -1,4 +1,5 @@
 import { List, ListItemButton, ListItemText } from "@mui/material";
+import "./Sidebar.css";
 
 type SidebarProps = {
     barList: string[];
@@ -9,10 +10,11 @@ type SidebarProps = {
 export default function Sidebar ({ barList, buttonOnClick }: SidebarProps){
 
     return (
-        <List>
+        <List className="sidebarlist">
             {barList.map((item) => (
                 <div>
                     <ListItemButton 
+                        className="sidebaritem"
                         onClick={() => buttonOnClick(item)}>
                         <ListItemText primary={item} />
                     </ListItemButton>

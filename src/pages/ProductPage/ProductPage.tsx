@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Alert, Dialog } from "@mui/material";
+import { Alert, Dialog, Typography } from "@mui/material";
 import * as productService from "../../../util/product-service";
 import Sidebar from "../../components/SideBar/Sidebar"
 import ProductItem from "../../components/ProductItem/ProductItem";
@@ -89,8 +89,8 @@ export default function ProductPage({ cartItemList, setCartItemList }: ProductPa
 
     return (
         <div className="productpage">
-            
             <div className="productpagecol1">
+                <Typography variant="h4">Available Products</Typography>
                 <Sidebar barList={productTypeList} buttonOnClick={loadSelectedProductType}/>
             </div>
             <div className="productpagecol2">
