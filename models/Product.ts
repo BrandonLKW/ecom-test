@@ -17,7 +17,7 @@ export class Product{
             this.name = name;
         }
         if (image){
-            this.image = "../images/" + image;
+            this.image = image;
         }
         if (stock_quantity){
             this.stock_quantity = stock_quantity;

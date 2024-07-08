@@ -138,6 +138,7 @@ export default function NavBar({ cartItemList, setCartItemList, setUser }: NavBa
         setMessage("Order successfully placed! The shop will start preparing your delivery.");
         setCartItemList([]);
         localStorage.removeItem("ecomtest_cart0"); //clear default cart cache as well as precaution
+        navigatePage("PRODUCTS");
     }
     
     return (
