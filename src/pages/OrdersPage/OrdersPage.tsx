@@ -140,7 +140,7 @@ export default function OrdersPage({ setCartItemList }: OrdersPageProps){
                     : 
                     <Typography variant="h2">Select an order!</Typography>
                     }
-                    <MessageModal message={message} messageType={messageType}/>
+                    <MessageModal message={message} messageType={messageType} setMessageType={setMessageType}/>
                 </div>
             </div>
         );
@@ -176,7 +176,7 @@ export default function OrdersPage({ setCartItemList }: OrdersPageProps){
                     : 
                     <Typography variant="h2">Select an order!</Typography>
                     }
-                    <MessageModal message={message} messageType={messageType}/>
+                    <MessageModal message={message} messageType={messageType} setMessageType={setMessageType}/>
                 </div>
             </div>
         );

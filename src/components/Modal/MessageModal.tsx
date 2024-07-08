@@ -4,9 +4,10 @@ import { Alert, Dialog } from "@mui/material"
 type MessageModalProps = {
     message: string;
     messageType: string;
+    setMessageType: (messageType: string) => void;
 };
 
-export default function MessageModal({ message, messageType }: MessageModalProps){
+export default function MessageModal({ message, messageType, setMessageType }: MessageModalProps){
     const [showModal, setShowModal] = useState<boolean>(false);
     const [showError, setShowError] = useState<boolean>(false);
     const [errorMsg, setErrorMsg] = useState<string>("");
@@ -16,6 +17,7 @@ export default function MessageModal({ message, messageType }: MessageModalProps
     const [warningMsg, setWarningMsg] = useState<string>("");
 
     useEffect(() => {
+        resetWarnings();
         setShowModal(true);
         switch (messageType){
             case "SUCCESS":
@@ -34,21 +36,24 @@ export default function MessageModal({ message, messageType }: MessageModalProps
                 setShowModal(false); //no display for unknown scenarios
                 break;
         }
-    }, [message]);
+    }, [messageType]);
 
     const resetWarnings = () => {
-        setShowModal(false);
-        setShowError(false);
-        setErrorMsg("");
-        setShowSuccess(false);
-        setSuccessMsg("");
-        setShowWarning(false);
-        setWarningMsg("");
+        setTimeout(() => {
+            setShowError(false);
+            setErrorMsg("");
+            setShowSuccess(false);
+            setSuccessMsg("");
+            setShowWarning(false);
+            setWarningMsg("");
+            setShowModal(false);
+            setMessageType(""); //this resets the dialog
+        }, 3000);
     }
 
     return (
         <Dialog open={showModal}
-                onClose={() => {resetWarnings()}}>
+                onClose={() => {resetWarnings()}} >
             <Alert severity="success" sx={{display: showSuccess ? "" : "none"}}>{successMsg}</Alert>
             <Alert severity="warning" sx={{display: showWarning ? "" : "none"}}>{warningMsg}</Alert>
             <Alert severity="error" sx={{display: showError ? "" : "none"}}>{errorMsg}</Alert>

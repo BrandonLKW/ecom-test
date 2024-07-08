@@ -24,12 +24,12 @@ export default function ProductItem({ product, addProductToCart, selectedQuantit
     }, [selectedQuantity]);
 
     const checkQuantityInput = (event: React.ChangeEvent<HTMLInputElement>) => {
-        //Error checking here
         const newQuantity = parseInt(event.target.value);
         setInputQuantity(newQuantity);
     };
 
     const handleUpdateButton = () => {
+        setInputQuantity(selectedQuantity);
         addProductToCart(product, inputQuantity);
     };
 

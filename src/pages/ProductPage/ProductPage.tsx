@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
-import { Alert, Dialog, Typography } from "@mui/material";
+import { Typography } from "@mui/material";
 import * as productService from "../../../util/product-service";
 import Sidebar from "../../components/SideBar/Sidebar"
 import ProductItem from "../../components/ProductItem/ProductItem";
 import { Product } from "../../../models/Product";
 import "./ProductPage.css";
 import { Cart } from "../../../models/Cart";
+import MessageModal from "../../components/Modal/MessageModal";
 
 type ProductPageProps = {
     cartItemList: Cart[];
@@ -16,9 +17,8 @@ export default function ProductPage({ cartItemList, setCartItemList }: ProductPa
     const [productTypeList, setProductTypeList] = useState<string[]>([]);
     const [selectedProductType, setSelectedProductType] = useState<string>("");
     const [productList, setProductList] = useState<Product[]>([]);
-    const [showModal, setShowModal] = useState<boolean>(false);
-    const [showAddSuccess, setShowAddSuccess] = useState<boolean>(false);
-    const [showAddError, setShowAddError] = useState<boolean>(false);
+    const [message, setMessage] = useState<string>("");
+    const [messageType, setMessageType] = useState<string>("");
 
     useEffect(() => {
         const loadProductTypeList = async () => {
@@ -58,11 +58,15 @@ export default function ProductPage({ cartItemList, setCartItemList }: ProductPa
     };
 
     const addProductToCart = (product: Product, quantity: number) => {
-        clearAlerts();
-        setShowModal(true);
         //Check quantity
         if (quantity <= 0){
-            setShowAddError(true);
+            setMessage("Unable to add product to Cart, please enter the quantity first.");
+            setMessageType("ERROR");
+            return;
+        }
+        if (quantity > product.stock_quantity){
+            setMessage("Unable to add product to Cart, selected quantity is more than we have in stock!");
+            setMessageType("ERROR");
             return;
         }
         //Check if Cart has product, if yes then just update quantity.
@@ -80,7 +84,8 @@ export default function ProductPage({ cartItemList, setCartItemList }: ProductPa
             updatedList.push(newCartItem);
         }
         setCartItemList(updatedList);
-        setShowAddSuccess(true);
+        setMessage("Product successfully added to Cart!");
+        setMessageType("SUCCESS");
     };
 
     const checkSelectedQuantity = (product: Product) => {
@@ -92,12 +97,6 @@ export default function ProductPage({ cartItemList, setCartItemList }: ProductPa
         return 0;
     };
 
-    const clearAlerts = () => {
-        setShowModal(false);
-        setShowAddSuccess(false);
-        setShowAddError(false);
-    };
-
     return (
         <div className="productpage">
             <div className="productpagecol1">
@@ -107,11 +106,7 @@ export default function ProductPage({ cartItemList, setCartItemList }: ProductPa
             <div className="productpagecol2">
                 {productList?.map((product) => (<ProductItem product={product} addProductToCart={addProductToCart} selectedQuantity={checkSelectedQuantity(product)}/>))}
             </div>
-            <Dialog open={showModal}
-                    onClose={() => {setShowModal(false)}}>
-                <Alert severity="success" sx={{display: showAddSuccess ? "" : "none"}}>Product successfully added to Cart!</Alert>
-                <Alert severity="error" sx={{display: showAddError ? "" : "none"}}>Unable to add product to Cart, please enter the quantity first.</Alert>
-            </Dialog>
+            <MessageModal message={message} messageType={messageType} setMessageType={setMessageType}/>
         </div>
     )
     

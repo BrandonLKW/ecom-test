@@ -198,7 +198,7 @@ export default function NavBar({ cartItemList, setCartItemList, setUser }: NavBa
             <SignUpFormModal showModal={showSignupModal} setShowModal={setShowSignupModal} setShowSecModal={setShowLoginModal} setUser={setUser}/>
             <CartModal showModal={showCartModal} setShowModal={setShowCartModal} setShowPaymentModal={setShowPaymentModal} cartItemList={cartItemList} />
             <PaymentModal showModal={showPaymentModal} setShowModal={setShowPaymentModal} submitOrder={submitOrder}/>
-            <MessageModal message={message} messageType={messageType}/>
+            <MessageModal message={message} messageType={messageType} setMessageType={setMessageType}/>
         </AppBar>
     );
 }
