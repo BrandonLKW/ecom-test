@@ -8,6 +8,7 @@ import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import LoginFormModal from "./Modal/LoginFormModal";
 import SignUpFormModal from "./Modal/SignUpFormModal";
 import CartModal from '../components/Modal/CartModal';
+import MessageModal from "./Modal/MessageModal";
 import PaymentModal from '../components/Modal/PaymentModal';
 import { Cart } from '../../models/Cart';
 import { User } from "../../models/User";
@@ -29,15 +30,12 @@ export default function NavBar({ cartItemList, setCartItemList, setUser }: NavBa
     const user = React.useContext(UserContext);
     const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
     const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
-    const [showModal, setShowModal] = React.useState<boolean>(false);
     const [showLoginModal, setShowLoginModal] = React.useState<boolean>(false);
     const [showSignupModal, setShowSignupModal] = React.useState<boolean>(false);
     const [showCartModal, setShowCartModal] = React.useState<boolean>(false);
     const [showPaymentModal, setShowPaymentModal] = React.useState<boolean>(false);
-    const [showError, setShowError] = React.useState<boolean>(false);
-    const [errorMsg, setErrorMsg] = React.useState<string>("");
-    const [showSuccess, setShowSuccess] = React.useState<boolean>(false);
-    const [successMsg, setSuccessMsg] = React.useState<string>("");
+    const [message, setMessage] = React.useState<string>("");
+    const [messageType, setMessageType] = React.useState<string>("");
 
     const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorElNav(event.currentTarget);
@@ -83,14 +81,6 @@ export default function NavBar({ cartItemList, setCartItemList, setUser }: NavBa
         }
     }
 
-    const resetWarnings = () => {
-        setShowModal(false);
-        setShowError(false);
-        setErrorMsg("");
-        setShowSuccess(false);
-        setSuccessMsg("");
-    }
-
     const submitOrder = async () => {
         //Counting sum of items and creating order item objects
         let cartItemSum = 0;
@@ -101,17 +91,15 @@ export default function NavBar({ cartItemList, setCartItemList, setUser }: NavBa
             //Break and return error if any item is under
             if (quantityCheck){
                 if (quantityCheck[0].stock_quantity < cartItem.quantity){
-                    setShowModal(true);
-                    setShowError(true);
-                    setErrorMsg(`Not enough quantity left for ${cartItem.product.name}. Please refresh and choose a different amount.`);
+                    setMessageType("ERROR");
+                    setMessage(`Not enough quantity left for ${cartItem.product.name}. Please refresh and choose a different amount.`);
                     return;
                 }
                 cartItem.product.stock_quantity = quantityCheck[0].stock_quantity;
             } else{
                 //db query error
-                setShowModal(true);
-                setShowError(true);
-                setErrorMsg(`Error checking stock for ${cartItem.product.name}. Please refresh and try again.`);
+                setMessageType("ERROR");
+                setMessage(`Error checking stock for ${cartItem.product.name}. Please refresh and try again.`);
                 return;
             }
             //Otherwise continue
@@ -136,9 +124,8 @@ export default function NavBar({ cartItemList, setCartItemList, setUser }: NavBa
                 setCartItemList([]);
             } else{
                 //db query error
-                setShowModal(true);
-                setShowError(true);
-                setErrorMsg(`Error adding order. Please refresh and try again.`);
+                setMessageType("ERROR");
+                setMessage(`Error adding order. Please refresh and try again.`);
             }
         }
         trySubmitOrder();
@@ -146,9 +133,8 @@ export default function NavBar({ cartItemList, setCartItemList, setUser }: NavBa
         //After successful transaction
         setShowCartModal(false);
         setShowPaymentModal(false);
-        setShowModal(true);
-        setShowSuccess(true);
-        setSuccessMsg("Order successfully placed! The shop will start preparing your delivery.")
+        setMessageType("SUCCESS");
+        setMessage("Order successfully placed! The shop will start preparing your delivery.")
     }
     
     return (
@@ -211,11 +197,7 @@ export default function NavBar({ cartItemList, setCartItemList, setUser }: NavBa
             <SignUpFormModal showModal={showSignupModal} setShowModal={setShowSignupModal} setShowSecModal={setShowLoginModal} setUser={setUser}/>
             <CartModal showModal={showCartModal} setShowModal={setShowCartModal} setShowPaymentModal={setShowPaymentModal} cartItemList={cartItemList} />
             <PaymentModal showModal={showPaymentModal} setShowModal={setShowPaymentModal} submitOrder={submitOrder}/>
-            <Dialog open={showModal}
-                    onClose={() => {resetWarnings()}}>
-                <Alert severity="success" sx={{display: showSuccess ? "" : "none"}}>{successMsg}</Alert>
-                <Alert severity="error" sx={{display: showError ? "" : "none"}}>{errorMsg}</Alert>
-            </Dialog>
+            <MessageModal message={message} messageType={messageType}/>
         </AppBar>
     );
 }

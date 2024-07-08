@@ -7,7 +7,7 @@ import { OrderItem } from "./OrderItem";
 // dayjs.extend(timezone);
 
 export class Order{
-    order_id: string = "";
+    order_id: string = "0";
     user_id: string = "";
     transaction_date: Dayjs = dayjs(new Date());
     total_cost: number = 0;

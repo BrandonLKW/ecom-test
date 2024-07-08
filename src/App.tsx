@@ -19,7 +19,11 @@ function App() {
         <NavBar cartItemList={cartItemList} setCartItemList={setCartItemList} setUser={setUser}/>
         <Routes>
           <Route path="/products" element={<ProductPage cartItemList={cartItemList} setCartItemList={setCartItemList}/>}/>
-          <Route path="/orders" element={<OrdersPage />}/>
+          {user.user_id !== "0" ? 
+            <Route path="/orders" element={<OrdersPage setCartItemList={setCartItemList}/>}
+            {...user.account_type === "RESTRICTED" ? <Route path="/history"/> : <></>}/> 
+          : 
+          <></>}
           <Route path="*" element={<ProductPage cartItemList={cartItemList} setCartItemList={setCartItemList}/>}/>
         </Routes>
         

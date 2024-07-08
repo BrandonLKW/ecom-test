@@ -30,6 +30,14 @@ export default function CartModal({ showModal, setShowModal, setShowPaymentModal
         setShowPaymentModal(true);
     }
 
+    const displayCheckoutButton = () => {
+        if (user.user_id === "0"
+            || cartItemList.length === 0){
+            return false;
+        }
+        return true;
+    }
+
     const calculateTotalCartCost = () => {
         let sum = 0;
         cartItemList.forEach((cartItem) => {
@@ -60,7 +68,7 @@ export default function CartModal({ showModal, setShowModal, setShowPaymentModal
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleClose}>Continue Shopping</Button>
-                    {user.user_id === "0" ? <></> : <Button type="submit">Checkout</Button>}
+                    {displayCheckoutButton() ? <Button type="submit">Checkout</Button> : <></>}
                 </DialogActions>
                 <Alert variant="outlined" severity="error" sx={{display: showWarning ? "" : "none"}}
                     action={<Button onClick={() => {handleCheckout()}} color="inherit" size="small">Yes, Checkout!</Button>}>
