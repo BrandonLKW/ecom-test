@@ -37,7 +37,6 @@ export default function LoginFormModal({ showModal, setShowModal, setShowSecModa
             user.email = formJson.email;
             user.password = formJson.password;
             const response = await userService.login(user);
-            console.log("*****" + response);
             if (response?.user_id){
                 user = new User(response.user_id, response.name, response.email, response.password, response.address, response.account_type);
                 setUser(user);
