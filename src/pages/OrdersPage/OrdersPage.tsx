@@ -2,10 +2,12 @@ import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../../App";
 import * as orderService from "../../../util/order-service";
 import * as productService from "../../../util/product-service";
+import * as userService from "../../../util/user-service";
 import { Cart } from "../../../models/Cart";
 import { Order } from "../../../models/Order";
 import { OrderItem } from "../../../models/OrderItem";
 import { Product } from "../../../models/Product";
+import { User } from "../../../models/User";
 import MessageModal from "../../components/Modal/MessageModal";
 import OrderSidebar from "../../components/SideBar/OrderSideBar";
 import { Alert, Avatar, Button, List, ListItem, ListItemAvatar, ListItemText, Typography } from "@mui/material";
@@ -20,24 +22,31 @@ export default function OrdersPage({ setCartItemList }: OrdersPageProps){
     const [orderList, setOrderList] = useState<Order[]>([]);
     const [selectedOrderItemList, setSelectedOrderItemList] = useState<OrderItem[]>([]);
     const [selectedOrder, setSelectedOrder] = useState<Order>(new Order());
+    const [selectedOrderUser, setSelectedOrderUser] = useState<User>(new User());
     const [message, setMessage] = useState<string>("");
     const [messageType, setMessageType] = useState<string>("");
 
     useEffect(() => {
-        const loadOrderList = async () => {
-            const response = await orderService.getOrdersByUserId(user.user_id);
-            if (response){
-                const result = [];
-                for (const item of response){
-                    result.push(new Order(item.order_id, item.user_id, item.transaction_date, item.total_cost, item.status));
-                }
-                setOrderList(result);
-            }
-        }
         loadOrderList();
         setSelectedOrder(new Order());
         setSelectedOrderItemList([]);
     }, []);
+
+    const loadOrderList = async () => {
+        let response;
+        if (user.account_type === "RESTRICTED"){
+            response = await orderService.getActiveOrders();
+        } else{
+            response = await orderService.getOrdersByUserId(user.user_id);
+        }
+        if (response){
+            const result = [];
+            for (const item of response){
+                result.push(new Order(item.order_id, item.user_id, item.transaction_date, item.total_cost, item.status));
+            }
+            setOrderList(result);
+        }
+    }
 
     const loadOrderItemList = async (order: Order) => {
         const response = await orderService.getOrderItemsByOrderId(order.order_id);
@@ -51,6 +60,13 @@ export default function OrdersPage({ setCartItemList }: OrdersPageProps){
             setSelectedOrderItemList(result);
         }
         setSelectedOrder(order);
+        //For superusers, load info of the order's user
+        if (user.account_type === "RESTRICTED"){
+            const user = await userService.getUserById(order.user_id);
+            if (user){
+                setSelectedOrderUser(new User(user[0].user_id, user[0].name, user[0].email, user[0].password, user[0].address, user[0].account_type));
+            }
+        }
     }
 
     //Replace cartItemList with values taken from Order history
@@ -75,39 +91,94 @@ export default function OrdersPage({ setCartItemList }: OrdersPageProps){
         setMessage("Order successfully copied!");
     }
 
-    return (
-        <div className="orderspage">
-            <div className="orderspagecol1">
-                <Typography variant="h4">Order History</Typography>
-                <OrderSidebar barList={orderList} buttonOnClick={loadOrderItemList}/>
+    //For superusers to change status of order to shipped
+    const shipOrder = async () => {
+        const response = await orderService.updateOrderStatus("COMPLETED", selectedOrder.order_id);
+        if (response){
+            setMessageType("SUCCESS");
+            setMessage("Order successfully shipped!");
+            loadOrderList();
+            setSelectedOrder(new Order());
+            setSelectedOrderItemList([]);
+            setSelectedOrderUser(new User());
+        } else{
+            setMessageType("ERROR");
+            setMessage("Error shipping order, please try again.");
+        }
+    }
+
+    if (user.account_type === "RESTRICTED"){
+        return (
+            <div className="orderspage">
+                <div className="orderspagecol1">
+                    <Typography variant="h4">Pending Orders</Typography>
+                    <OrderSidebar barList={orderList} buttonOnClick={loadOrderItemList}/>
+                </div>
+                <div className="orderspagecol2">
+                    {selectedOrder.order_id !== "0" 
+                    ? 
+                    <div>
+                        <Typography variant="h3">{`Order #${selectedOrder.order_id}`}</Typography>
+                        <Typography variant="h6">{`Name: ${selectedOrderUser.name}`}</Typography>
+                        <Typography variant="h6">{`Address: ${selectedOrderUser.address}`}</Typography>
+                        <List>
+                            {selectedOrderItemList.map((orderItem) => (
+                                <ListItem>
+                                    <ListItemAvatar>
+                                        <Avatar>
+                                            <img src={orderItem.product.image} height="50px" width="50px"/>
+                                        </Avatar>
+                                    </ListItemAvatar>
+                                    <ListItemText primary={`${orderItem.product.name} - Bought ${orderItem.quantity} units at $${orderItem.unit_price} each.`}/>
+                                </ListItem>
+                            ))}
+                        </List>
+                        <div className="orderspageHorizontal">
+                            <Button variant="contained" onClick={shipOrder}>Ship Order</Button>
+                        </div>
+                    </div> 
+                    : 
+                    <Typography variant="h2">Select an order!</Typography>
+                    }
+                    <MessageModal message={message} messageType={messageType}/>
+                </div>
             </div>
-            <div className="orderspagecol2">
-                {selectedOrder.order_id !== "0" 
-                ? 
-                <div>
-                    <Typography variant="h3">{`Order #${selectedOrder.order_id}`}</Typography>
-                    <List>
-                        {selectedOrderItemList.map((orderItem) => (
-                            <ListItem>
-                                <ListItemAvatar>
-                                    <Avatar>
-                                        <img src={orderItem.product.image} height="50px" width="50px"/>
-                                    </Avatar>
-                                </ListItemAvatar>
-                                <ListItemText primary={`${orderItem.product.name} - Bought ${orderItem.quantity} units at $${orderItem.unit_price} each.`}/>
-                            </ListItem>
-                        ))}
-                    </List>
-                    <div className="orderspageHorizontal">
-                        <Button variant="contained" onClick={copyCart}>Order Again!</Button>
-                        <Alert severity="warning">This action will replace all existing items in your cart!</Alert>
-                    </div>
-                </div> 
-                : 
-                <Typography variant="h2">Select an order!</Typography>
-                }
-                <MessageModal message={message} messageType={messageType}/>
+        );
+    } else{
+        return (
+            <div className="orderspage">
+                <div className="orderspagecol1">
+                    <Typography variant="h4">Order History</Typography>
+                    <OrderSidebar barList={orderList} buttonOnClick={loadOrderItemList}/>
+                </div>
+                <div className="orderspagecol2">
+                    {selectedOrder.order_id !== "0" 
+                    ? 
+                    <div>
+                        <Typography variant="h3">{`Order #${selectedOrder.order_id}`}</Typography>
+                        <List>
+                            {selectedOrderItemList.map((orderItem) => (
+                                <ListItem>
+                                    <ListItemAvatar>
+                                        <Avatar>
+                                            <img src={orderItem.product.image} height="50px" width="50px"/>
+                                        </Avatar>
+                                    </ListItemAvatar>
+                                    <ListItemText primary={`${orderItem.product.name} - Bought ${orderItem.quantity} units at $${orderItem.unit_price} each.`}/>
+                                </ListItem>
+                            ))}
+                        </List>
+                        <div className="orderspageHorizontal">
+                            <Button variant="contained" onClick={copyCart}>Order Again!</Button>
+                            <Alert severity="warning">This action will replace all existing items in your cart!</Alert>
+                        </div>
+                    </div> 
+                    : 
+                    <Typography variant="h2">Select an order!</Typography>
+                    }
+                    <MessageModal message={message} messageType={messageType}/>
+                </div>
             </div>
-        </div>
-    )
+        );
+    }
 }

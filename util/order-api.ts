@@ -40,3 +40,28 @@ export async function getOrderItemsByOrderId(orderId: string){
         throw new Error("Invalid Call");
     }
 }
+
+export async function getActiveOrders(){
+    const res = await fetch(BASE_URL + "find/active", {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+    })
+    if (res.ok) {
+        return res.json();
+    } else {
+        throw new Error("Invalid Call");
+    }
+}
+
+export async function updateOrderStatus(status: string, orderId: string){
+    const res = await fetch(BASE_URL + "update/order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({status: status, order_id: orderId}),
+    })
+    if (res.ok) {
+        return res.json();
+    } else {
+        throw new Error("Invalid Call");
+    }
+}

@@ -50,8 +50,31 @@ const getOrderItemsByOrderId = async (req, res) => {
     }
 }
 
+const getActiveOrders = async (req, res) => {
+    try {
+        const queryStr = "SELECT * FROM public.order WHERE public.order.status = 'PENDING' ORDER BY public.order.transaction_date ASC";
+        const response = await orderdb.query(queryStr, "");
+        res.status(201).json(response.rows);
+    } catch (error) {
+        res.status(500).json({ error });
+    }
+}
+
+const updateOrderStatus = async (req, res) => {
+    try {
+        const queryStr = "UPDATE public.order SET status = $1 WHERE order_id = $2 RETURNING 'DONE';";
+        const queryValues = [req.body.status, req.body.order_id];
+        const response = await orderdb.query(queryStr, queryValues);
+        res.status(201).json(response.rows);
+    } catch (error) {
+        res.status(500).json({ error });
+    }
+}
+
 module.exports = {
     addOrder,
     getOrdersByUserId,
-    getOrderItemsByOrderId
+    getOrderItemsByOrderId,
+    getActiveOrders,
+    updateOrderStatus
 };

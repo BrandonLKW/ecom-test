@@ -15,3 +15,13 @@ export async function getOrderItemsByOrderId(orderId: string){
     const res = await orderAPI.getOrderItemsByOrderId(orderId);
     return res;
 }
+
+export async function getActiveOrders(){
+    const res = await orderAPI.getActiveOrders();
+    return res;
+}
+
+export async function updateOrderStatus(status: string, orderId: string){
+    const res = await orderAPI.updateOrderStatus(status, orderId);
+    return res;
+}

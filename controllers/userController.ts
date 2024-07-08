@@ -61,6 +61,18 @@ const signup = async (req, res) => {
     }
 }
 
+const getUserById = async (req, res) => {
+    try {
+        const { user_id } = req.body;
+        const queryStr = `SELECT * FROM public.user WHERE public.user.user_id = $1;`;
+        const queryValues = [user_id];
+        const user = await userdb.query(queryStr, queryValues);
+        res.status(201).json(user.rows);
+    } catch (error) {
+        res.status(500).json({ error });
+    }
+}
+
 function createJWT(user) {
     return jwt.sign(
         { user },
@@ -77,5 +89,6 @@ async function hashPassword(password){
 
 module.exports = {
     login,
-    signup
+    signup,
+    getUserById
 };

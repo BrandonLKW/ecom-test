@@ -26,3 +26,16 @@ export async function signup(user: User){
         throw new Error("Invalid Signup");
     }
 }
+
+export async function getUserById(userId: string){
+    const res = await fetch(BASE_URL + "get/userid", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({user_id: userId}),
+    })
+    if (res.ok) {
+        return res.json();
+    } else {
+        throw new Error("Invalid Signup");
+    }
+}

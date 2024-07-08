@@ -18,6 +18,11 @@ export async function signup(user: User){
     return res;
 }
 
+export async function getUserById(userId: string){
+    const res = await userAPI.getUserById(userId);
+    return res;
+}
+
 export function getToken(){
     const token = localStorage.getItem("token");
     if (!token) {
