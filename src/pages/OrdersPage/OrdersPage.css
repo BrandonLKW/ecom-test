@@ -9,12 +9,18 @@
     padding-top: 5vh;
     padding-bottom: 5vh;
     grid-template-columns: 1fr 3fr;
-    grid-template-rows: 1fr;
+    grid-template-rows: 1fr 9fr;
     grid-template-areas:
+        "header header"
         "leftpanel rightpanel";
     grid-gap: 3px;
     background-color: white;
     overflow: auto;
+}
+
+.orderspageheader{
+    grid-area: header;
+    height: 100%;
 }
 
 .orderspagecol1 {
@@ -25,12 +31,8 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    border-style: solid;
-    border-color: blueviolet;
-    border-width: 2px;
-    border-top:  0px;
-    border-bottom: 0px;
     gap: 50px;
+    overflow: auto;
 }
 
 .orderspagecol2 {

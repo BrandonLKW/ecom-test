@@ -10,7 +10,7 @@ import { Product } from "../../../models/Product";
 import { User } from "../../../models/User";
 import MessageModal from "../../components/Modal/MessageModal";
 import OrderSidebar from "../../components/SideBar/OrderSideBar";
-import { Alert, Avatar, Button, List, ListItem, ListItemAvatar, ListItemText, Typography } from "@mui/material";
+import { Alert, Avatar, Box, Button, LinearProgress, List, ListItem, ListItemAvatar, ListItemText, Typography } from "@mui/material";
 import "./OrdersPage.css";
 
 type OrdersPageProps = {
@@ -25,6 +25,7 @@ export default function OrdersPage({ setCartItemList }: OrdersPageProps){
     const [selectedOrderUser, setSelectedOrderUser] = useState<User>(new User());
     const [message, setMessage] = useState<string>("");
     const [messageType, setMessageType] = useState<string>("");
+    const [showLoading, setShowLoading] = useState<boolean>(false);
 
     useEffect(() => {
         loadOrderList();
@@ -49,47 +50,57 @@ export default function OrdersPage({ setCartItemList }: OrdersPageProps){
     }
 
     const loadOrderItemList = async (order: Order) => {
-        const response = await orderService.getOrderItemsByOrderId(order.order_id);
-        if (response){
-            const result = [];
-            for (const item of response){
-                const orderItem = new OrderItem(item.order_item_id, item.order_id, item.unit_price, item.quantity, item.product_id);
-                orderItem.product = new Product(item.product_id, item.product_type, item.name, item.image, item.stock_quantity, item.unit_price);
-                result.push(orderItem);
+        const loadOrderItemListAction = async () => {
+            setShowLoading(true);
+            const response = await orderService.getOrderItemsByOrderId(order.order_id);
+            if (response){
+                const result = [];
+                for (const item of response){
+                    const orderItem = new OrderItem(item.order_item_id, item.order_id, item.unit_price, item.quantity, item.product_id);
+                    orderItem.product = new Product(item.product_id, item.product_type, item.name, item.image, item.stock_quantity, item.unit_price);
+                    result.push(orderItem);
+                }
+                setSelectedOrderItemList(result);
             }
-            setSelectedOrderItemList(result);
-        }
-        setSelectedOrder(order);
-        //For superusers, load info of the order's user
-        if (user.account_type === "RESTRICTED"){
-            const user = await userService.getUserById(order.user_id);
-            if (user){
-                setSelectedOrderUser(new User(user[0].user_id, user[0].name, user[0].email, user[0].password, user[0].address, user[0].account_type));
+            setSelectedOrder(order);
+            //For superusers, load info of the order's user
+            if (user.account_type === "RESTRICTED"){
+                const user = await userService.getUserById(order.user_id);
+                if (user){
+                    setSelectedOrderUser(new User(user[0].user_id, user[0].name, user[0].email, user[0].password, user[0].address, user[0].account_type));
+                }
             }
-        }
+        };
+        await loadOrderItemListAction();
+        setShowLoading(false);
     }
 
     //Replace cartItemList with values taken from Order history
     const copyCart = async () => {
-        const newCartItemList = [];
-        //Check if available stock
-        for (const orderItem of selectedOrderItemList){
-            const stockResponse = await productService.getProductStock(orderItem.product_id);
-            if (stockResponse){
-                if (stockResponse[0].stock_quantity < orderItem.quantity){
-                    //If not enough stock, break and stop action
-                    setMessageType("ERROR");
-                    setMessage(`Not enough stock left for ${orderItem.product.name}. Order was not copied to existing cart.`);
-                    return;
+        const copyCartAction = async () => {
+            setShowLoading(true);
+            const newCartItemList = [];
+            //Check if available stock
+            for (const orderItem of selectedOrderItemList){
+                const stockResponse = await productService.getProductStock(orderItem.product_id);
+                if (stockResponse){
+                    if (stockResponse[0].stock_quantity < orderItem.quantity){
+                        //If not enough stock, break and stop action
+                        setMessageType("ERROR");
+                        setMessage(`Not enough stock left for ${orderItem.product.name}. Order was not copied to existing cart.`);
+                        return;
+                    }
                 }
+                //If available stock, create cart items
+                newCartItemList.push(new Cart(user.user_id, orderItem.quantity, orderItem.product));
             }
-            //If available stock, create cart items
-            newCartItemList.push(new Cart(user.user_id, orderItem.quantity, orderItem.product));
+            setCartItemList(newCartItemList);
         }
-        setCartItemList(newCartItemList);
+        await copyCartAction();
         setMessageType("SUCCESS");
         setMessage("Order successfully copied!");
-    }
+        setShowLoading(false);
+    };
 
     //For superusers to change status of order to shipped
     const shipOrder = async () => {
@@ -110,6 +121,12 @@ export default function OrdersPage({ setCartItemList }: OrdersPageProps){
     if (user.account_type === "RESTRICTED"){
         return (
             <div className="orderspage">
+                <div className="orderspageheader">
+                    <Box sx={{ height:'100%', width: '100%', display: showLoading ? "" : "none"}}>
+                        <LinearProgress/>
+                        <Typography variant="h2">testtest</Typography>
+                    </Box>
+                </div>
                 <div className="orderspagecol1">
                     <Typography variant="h4">Pending Orders</Typography>
                     <OrderSidebar barList={orderList} buttonOnClick={loadOrderItemList}/>
@@ -147,6 +164,11 @@ export default function OrdersPage({ setCartItemList }: OrdersPageProps){
     } else{
         return (
             <div className="orderspage">
+                <div className="orderspageheader">
+                    <Box sx={{ width: '100%', display: showLoading ? "" : "none"}}>
+                        <LinearProgress/>
+                    </Box>
+                </div>
                 <div className="orderspagecol1">
                     <Typography variant="h4">Order History</Typography>
                     <OrderSidebar barList={orderList} buttonOnClick={loadOrderItemList}/>

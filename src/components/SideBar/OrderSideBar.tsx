@@ -11,13 +11,13 @@ type OrderSidebarProps = {
 export default function OrderSidebar ({ barList, buttonOnClick }: OrderSidebarProps){
 
     return (
-        <List>
+        <List className="sidebarlist">
             {barList.map((item) => (
                 <div>
                     <ListItemButton 
                         className="sidebaritem"
                         onClick={() => buttonOnClick(item)}>
-                        <ListItemText primary={`Order #${item.order_id}`} />
+                        <ListItemText className="sidebarlistitem" primary={`Order #${item.order_id}`} />
                     </ListItemButton>
                 </div>
             ))}

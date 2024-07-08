@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Typography } from "@mui/material";
+import { Box, LinearProgress, Typography } from "@mui/material";
 import * as productService from "../../../util/product-service";
 import Sidebar from "../../components/SideBar/Sidebar"
 import ProductItem from "../../components/ProductItem/ProductItem";
@@ -19,9 +19,11 @@ export default function ProductPage({ cartItemList, setCartItemList }: ProductPa
     const [productList, setProductList] = useState<Product[]>([]);
     const [message, setMessage] = useState<string>("");
     const [messageType, setMessageType] = useState<string>("");
+    const [showLoading, setShowLoading] = useState<boolean>(false);
 
     useEffect(() => {
         const loadProductTypeList = async () => {
+            setShowLoading(true);
             const response = await productService.getAllProductTypes();
             if (response){
                 const result = [];
@@ -32,6 +34,7 @@ export default function ProductPage({ cartItemList, setCartItemList }: ProductPa
             }
         }
         loadProductTypeList();
+        setShowLoading(false);
     }, []);
 
     useEffect(() => {
@@ -44,17 +47,22 @@ export default function ProductPage({ cartItemList, setCartItemList }: ProductPa
     }, [cartItemList]);
 
     const loadSelectedProductType = async (productType: string) => {
-        if (productType){
-            setSelectedProductType(productType);
-            const response = await productService.getAllProductByType(productType);
-            if (response){
-                const result = [];
-                for (const item of response){
-                    result.push(new Product(item.product_id, item.product_type, item.name, item.image, item.stock_quantity, item.unit_price));
+        const loadSelectedProductTypeAction = async () => {
+            setShowLoading(true);
+            if (productType){
+                setSelectedProductType(productType);
+                const response = await productService.getAllProductByType(productType);
+                if (response){
+                    const result = [];
+                    for (const item of response){
+                        result.push(new Product(item.product_id, item.product_type, item.name, item.image, item.stock_quantity, item.unit_price));
+                    }
+                    setProductList(result);
                 }
-                setProductList(result);
             }
         }
+        await loadSelectedProductTypeAction();
+        setShowLoading(false);
     };
 
     const addProductToCart = (product: Product, quantity: number) => {
@@ -99,6 +107,11 @@ export default function ProductPage({ cartItemList, setCartItemList }: ProductPa
 
     return (
         <div className="productpage">
+            <div className="orderspageheader">
+                <Box sx={{ width: '100%', display: showLoading ? "" : "none"}}>
+                    <LinearProgress/>
+                </Box>
+            </div>
             <div className="productpagecol1">
                 <Typography variant="h5">Available Products</Typography>
                 <Sidebar barList={productTypeList} buttonOnClick={loadSelectedProductType}/>

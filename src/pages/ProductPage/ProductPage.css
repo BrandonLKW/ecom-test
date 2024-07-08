@@ -9,12 +9,18 @@
     padding-top: 5vh;
     padding-bottom: 5vh;
     grid-template-columns: 1fr 4fr;
-    grid-template-rows: 1fr;
+    grid-template-rows: 1fr 9fr;
     grid-template-areas:
+        "header header"
         "leftpanel rightpanel";
     grid-gap: 3px;
     background-color: white;
     overflow: auto;
+}
+
+.orderspageheader{
+    grid-area: header;
+    height: 100%;
 }
 
 .productpagecol1 {
