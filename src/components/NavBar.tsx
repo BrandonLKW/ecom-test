@@ -120,7 +120,7 @@ export default function NavBar({ cartItemList, setCartItemList, setUser }: NavBa
             if (orderResponse){
                 //Update product stock after successful order
                 for (const cartItem of cartItemList){
-                    const stockUpdate = await productService.updateProductStock(cartItem.product.product_id, (cartItem.product.stock_quantity - cartItem.quantity));
+                    await productService.updateProductStock(cartItem.product.product_id, (cartItem.product.stock_quantity - cartItem.quantity));
                     //No error checks for now, assume all successful updates
                 }
             } else{

@@ -1,10 +1,5 @@
 import dayjs, { Dayjs } from "dayjs";
-import * as utc from "dayjs/plugin/utc";
-import * as timezone from "dayjs/plugin/timezone";
 import { OrderItem } from "./OrderItem";
-
-// dayjs.extend(utc);
-// dayjs.extend(timezone);
 
 export class Order{
     order_id: string = "0";

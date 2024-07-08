@@ -1,7 +1,7 @@
 import { Typography } from "@mui/material";
 import "./MainPage.css";
 
-export default function MainPage(props: any){
+export default function MainPage(){
 
     return (
     <div className="mainpage">
