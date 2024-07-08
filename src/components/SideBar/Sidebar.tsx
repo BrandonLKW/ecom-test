@@ -12,13 +12,10 @@ export default function Sidebar ({ barList, buttonOnClick }: SidebarProps){
     return (
         <List className="sidebarlist">
             {barList.map((item) => (
-                <div>
-                    <ListItemButton 
-                        className="sidebaritem"
-                        onClick={() => buttonOnClick(item)}>
-                        <ListItemText primary={item} />
-                    </ListItemButton>
-                </div>
+                <ListItemButton 
+                    onClick={() => buttonOnClick(item)}>
+                    <ListItemText className="sidebarlistitem" primary={item} />
+                </ListItemButton>
             ))}
         </List>
     );

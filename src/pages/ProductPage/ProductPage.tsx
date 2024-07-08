@@ -101,7 +101,7 @@ export default function ProductPage({ cartItemList, setCartItemList }: ProductPa
     return (
         <div className="productpage">
             <div className="productpagecol1">
-                <Typography variant="h4">Available Products</Typography>
+                <Typography variant="h5">Available Products</Typography>
                 <Sidebar barList={productTypeList} buttonOnClick={loadSelectedProductType}/>
             </div>
             <div className="productpagecol2">
