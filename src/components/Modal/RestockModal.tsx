@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Button, Box, Dialog, DialogTitle, DialogContent, DialogActions, LinearProgress, TextField } from "@mui/material";
 import { Product } from '../../../models/Product';
 import * as productService from "../../../util/product-service";
+import "./Modal.css";
 
 type PaymentModalProps = {
     showModal: boolean;
@@ -46,8 +47,10 @@ export default function PaymentModal({ showModal, setShowModal, setShowRestockSu
                 }}>
                 <DialogTitle>{`Updating Stock for ${product.name}`}</DialogTitle>
                 <DialogContent>
-                    <TextField label="Current Quantity" name="current" variant="outlined" type="number" value={product.stock_quantity} disabled/>
-                    <TextField label="New Quantity" name="new" variant="outlined" type="number" value={newStockQuantity} onChange={checkQuantityInput}/>
+                    <div className='flexContainer'>
+                        <TextField label="Current Quantity" name="current" variant="outlined" type="number" value={product.stock_quantity} disabled/>
+                        <TextField label="New Quantity" name="new" variant="outlined" type="number" value={newStockQuantity} onChange={checkQuantityInput} required/>
+                    </div>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={() => {setShowModal(false)}}>Cancel</Button>

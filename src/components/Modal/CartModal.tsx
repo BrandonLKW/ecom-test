@@ -40,7 +40,6 @@ export default function CartModal({ showModal, setShowModal, setShowPaymentModal
 
     const calculateTotalCartCost = () => {
         let sum = 0;
-        console.log(cartItemList);
         cartItemList.forEach((cartItem) => {
             sum += cartItem.calculateSum();
         });
@@ -64,12 +63,17 @@ export default function CartModal({ showModal, setShowModal, setShowPaymentModal
                         <div>
                             {cartItemList.map((cartItem) => (<CartItem cartItem={cartItem}/>))}
                         </div>
-                        <Typography variant="h5">{`Total sum: $${calculateTotalCartCost()}`}</Typography>
+                        {cartItemList.length === 0 
+                        ? 
+                        <Typography variant="h5">{`Select items from our Products list!`}</Typography> 
+                        : 
+                        <Typography variant="h5">{`Total sum: $${calculateTotalCartCost()}`}</Typography>}
+                        
                     </div>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleClose}>Continue Shopping</Button>
-                    {displayCheckoutButton() ? <Button type="submit">Checkout</Button> : <></>}
+                    {displayCheckoutButton() ? <Button type="submit">Checkout</Button> : <Button>Login/Signup to Checkout!</Button>}
                 </DialogActions>
                 <Alert variant="outlined" severity="error" sx={{display: showWarning ? "" : "none"}}
                     action={<Button onClick={() => {handleCheckout()}} color="inherit" size="small">Yes, Checkout!</Button>}>
