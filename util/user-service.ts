@@ -3,6 +3,13 @@ import * as userAPI from "./user-api";
 
 export async function login(user: User){
     const res = await userAPI.login(user);
+    const token = res.token;
+    const payload = JSON.parse(atob(token.split(".")[1]));
+    if (payload.exp < Date.now() / 1000) {
+        localStorage.removeItem("token");
+        return null;
+    }
+    localStorage.setItem("token", token);
     return res;
 }
 

@@ -20,3 +20,8 @@ export async function updateProductStock(productId: string, newQuantity: number)
     const res = await productAPI.updateProductStock(productId, newQuantity);
     return res;
 }
+
+export async function addProduct(product: Product){
+    const res = await productAPI.addProduct(product);
+    return res;
+}

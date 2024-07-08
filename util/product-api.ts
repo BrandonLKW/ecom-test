@@ -52,3 +52,16 @@ export async function updateProductStock(productId: string, newQuantity: number)
         throw new Error("Invalid Call");
     }
 }
+
+export async function addProduct(product: Product){
+    const res = await fetch(BASE_URL + "add", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(product),
+    })
+    if (res.ok) {
+        return res.json();
+    } else {
+        throw new Error("Invalid Call");
+    }
+}

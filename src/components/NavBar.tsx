@@ -8,8 +8,9 @@ import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import LoginFormModal from "./Modal/LoginFormModal";
 import SignUpFormModal from "./Modal/SignUpFormModal";
 import CartModal from '../components/Modal/CartModal';
-import MessageModal from "./Modal/MessageModal";
 import PaymentModal from '../components/Modal/PaymentModal';
+import AddProductModal from "./Modal/AddProductModal";
+import MessageModal from "./Modal/MessageModal";
 import { Cart } from '../../models/Cart';
 import { User } from "../../models/User";
 import { Order } from "../../models/Order";
@@ -17,7 +18,7 @@ import { OrderItem } from "../../models/OrderItem";
 
 const pages = ['Home', 'Products']; //for unlogged users, baseline options
 const userPages = ['Orders']; //additional options for logged users
-const adminPages = ['Orders', 'History']; //additional options for superusers
+const adminPages = ['Orders', 'Add Product']; //additional options for superusers
 const settings = ['Logout'];
 
 type NavBarProps = {
@@ -34,6 +35,7 @@ export default function NavBar({ cartItemList, setCartItemList, setUser }: NavBa
     const [showSignupModal, setShowSignupModal] = React.useState<boolean>(false);
     const [showCartModal, setShowCartModal] = React.useState<boolean>(false);
     const [showPaymentModal, setShowPaymentModal] = React.useState<boolean>(false);
+    const [showAddProductModal, setShowAddProductModal] = React.useState<boolean>(false);
     const [message, setMessage] = React.useState<string>("");
     const [messageType, setMessageType] = React.useState<string>("");
 
@@ -51,6 +53,7 @@ export default function NavBar({ cartItemList, setCartItemList, setUser }: NavBa
             case "LOGOUT":
                 setUser(new User());
                 setCartItemList([]);
+                navigatePage("HOME");
                 break;
             default:
                 break;
@@ -70,6 +73,9 @@ export default function NavBar({ cartItemList, setCartItemList, setUser }: NavBa
                 break;
             case "HISTORY":
                 navigate("/history");
+                break;
+            case "ADD PRODUCT":
+                setShowAddProductModal(true);
                 break;
             default:
                 //Do nothing if no link
@@ -216,6 +222,7 @@ export default function NavBar({ cartItemList, setCartItemList, setUser }: NavBa
             <SignUpFormModal showModal={showSignupModal} setShowModal={setShowSignupModal} setShowSecModal={setShowLoginModal} setUser={setUser}/>
             <CartModal showModal={showCartModal} setShowModal={setShowCartModal} setShowPaymentModal={setShowPaymentModal} cartItemList={cartItemList} />
             <PaymentModal showModal={showPaymentModal} setShowModal={setShowPaymentModal} submitOrder={submitOrder}/>
+            <AddProductModal showModal={showAddProductModal} setShowModal={setShowAddProductModal}/>
             <MessageModal message={message} messageType={messageType} setMessageType={setMessageType}/>
         </AppBar>
     );

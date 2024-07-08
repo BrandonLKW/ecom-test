@@ -43,9 +43,21 @@ const updateProductStock = async (req, res) => {
     }
 }
 
+const addProduct = async (req, res) => {
+    try{
+        const { product_type, name, image, stock_quantity, unit_price } = req.body;
+        const queryStr = `INSERT INTO public.product(product_type, name, image, stock_quantity, unit_price) VALUES ('${product_type}', '${name}', '${image}', ${stock_quantity}, ${unit_price}) RETURNING product_id;`;
+        const response = await productdb.query(queryStr, "");
+        res.status(201).json(response.rows);
+    } catch (error){
+        res.status(500).json({ error });
+    }
+}
+
 module.exports = {
     getAllTypes, 
     getAllProductByTypes,
     getProductStock,
-    updateProductStock
+    updateProductStock,
+    addProduct
 };
