@@ -1,7 +1,7 @@
 import { Product } from "./Product";
 
 export class Cart{
-    user_id: string = "";
+    user_id: string = "0";
     quantity: number = 0;
     product: Product = new Product();
 

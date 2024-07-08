@@ -134,7 +134,8 @@ export default function NavBar({ cartItemList, setCartItemList, setUser }: NavBa
         setShowCartModal(false);
         setShowPaymentModal(false);
         setMessageType("SUCCESS");
-        setMessage("Order successfully placed! The shop will start preparing your delivery.")
+        setMessage("Order successfully placed! The shop will start preparing your delivery.");
+        localStorage.removeItem("ecomtest_cart"); //clear cart cache as well
     }
     
     return (

@@ -40,6 +40,7 @@ export default function CartModal({ showModal, setShowModal, setShowPaymentModal
 
     const calculateTotalCartCost = () => {
         let sum = 0;
+        console.log(cartItemList);
         cartItemList.forEach((cartItem) => {
             sum += cartItem.calculateSum();
         });
