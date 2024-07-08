@@ -117,7 +117,6 @@ export default function NavBar({ cartItemList, setCartItemList, setUser }: NavBa
                     const stockUpdate = await productService.updateProductStock(cartItem.product.product_id, (cartItem.product.stock_quantity - cartItem.quantity));
                     //No error checks for now, assume all successful updates
                 }
-                setCartItemList([]);
             } else{
                 //db query error
                 setMessageType("ERROR");
@@ -131,7 +130,8 @@ export default function NavBar({ cartItemList, setCartItemList, setUser }: NavBa
         setShowPaymentModal(false);
         setMessageType("SUCCESS");
         setMessage("Order successfully placed! The shop will start preparing your delivery.");
-        localStorage.removeItem("ecomtest_cart"); //clear cart cache as well
+        setCartItemList([]);
+        localStorage.removeItem("ecomtest_cart0"); //clear default cart cache as well as precaution
     }
     
     return (

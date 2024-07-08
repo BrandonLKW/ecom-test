@@ -47,6 +47,9 @@ function App() {
     if (cartItemList?.length > 0){
       localStorage.setItem("ecomtest_cart" + user.user_id, JSON.stringify(cartItemList)); //use userid as psuedo uid
       setCartItemList(cartItemList);
+    } else{
+      localStorage.removeItem("ecomtest_cart" + user.user_id);
+      setCartItemList([]);
     }
   };
 
@@ -57,7 +60,7 @@ function App() {
         <Routes>
           <Route path="/products" element={<ProductPage cartItemList={cartItemList} setCartItemList={saveCart}/>}/>
           {user.user_id !== "0" ? 
-            <Route path="/orders" element={<OrdersPage setCartItemList={saveCart}/>}
+            <Route path="/orders" element={<OrdersPage cartItemList={cartItemList} setCartItemList={saveCart}/>}
             {...user.account_type === "RESTRICTED" 
             ? 
             <Route path="/history"/> 

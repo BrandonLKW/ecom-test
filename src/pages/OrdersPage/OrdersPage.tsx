@@ -14,10 +14,11 @@ import { Alert, Avatar, Box, Button, LinearProgress, List, ListItem, ListItemAva
 import "./OrdersPage.css";
 
 type OrdersPageProps = {
+    cartItemList: Cart[];
     setCartItemList: (list: Cart[]) => void;
 };
 
-export default function OrdersPage({ setCartItemList }: OrdersPageProps){
+export default function OrdersPage({ cartItemList, setCartItemList }: OrdersPageProps){
     const user = useContext(UserContext);
     const [orderList, setOrderList] = useState<Order[]>([]);
     const [selectedOrderItemList, setSelectedOrderItemList] = useState<OrderItem[]>([]);
@@ -31,22 +32,27 @@ export default function OrdersPage({ setCartItemList }: OrdersPageProps){
         loadOrderList();
         setSelectedOrder(new Order());
         setSelectedOrderItemList([]);
-    }, []);
+    }, [cartItemList]);
 
     const loadOrderList = async () => {
-        let response;
-        if (user.account_type === "RESTRICTED"){
-            response = await orderService.getActiveOrders();
-        } else{
-            response = await orderService.getOrdersByUserId(user.user_id);
-        }
-        if (response){
-            const result = [];
-            for (const item of response){
-                result.push(new Order(item.order_id, item.user_id, item.transaction_date, item.total_cost, item.status));
+        const loadOrderListAction = async () => {
+            setShowLoading(true);
+            let response;
+            if (user.account_type === "RESTRICTED"){
+                response = await orderService.getActiveOrders();
+            } else{
+                response = await orderService.getOrdersByUserId(user.user_id);
             }
-            setOrderList(result);
+            if (response){
+                const result = [];
+                for (const item of response){
+                    result.push(new Order(item.order_id, item.user_id, item.transaction_date, item.total_cost, item.status));
+                }
+                setOrderList(result);
+            }
         }
+        await loadOrderListAction();
+        setShowLoading(false);
     }
 
     const loadOrderItemList = async (order: Order) => {
@@ -122,9 +128,8 @@ export default function OrdersPage({ setCartItemList }: OrdersPageProps){
         return (
             <div className="orderspage">
                 <div className="orderspageheader">
-                    <Box sx={{ height:'100%', width: '100%', display: showLoading ? "" : "none"}}>
+                    <Box sx={{ width: '100%', display: showLoading ? "" : "none"}}>
                         <LinearProgress/>
-                        <Typography variant="h2">testtest</Typography>
                     </Box>
                 </div>
                 <div className="orderspagecol1">
