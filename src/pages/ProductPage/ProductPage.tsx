@@ -22,19 +22,7 @@ export default function ProductPage({ cartItemList, setCartItemList }: ProductPa
     const [showLoading, setShowLoading] = useState<boolean>(false);
 
     useEffect(() => {
-        const loadProductTypeList = async () => {
-            setShowLoading(true);
-            const response = await productService.getAllProductTypes();
-            if (response){
-                const result = [];
-                for (const item of response){
-                    result.push(item.product_type);
-                }
-                setProductTypeList(result);
-            }
-        }
         loadProductTypeList();
-        setShowLoading(false);
     }, []);
 
     useEffect(() => {
@@ -45,6 +33,22 @@ export default function ProductPage({ cartItemList, setCartItemList }: ProductPa
         }
         reloadProducts();
     }, [cartItemList]);
+
+    const loadProductTypeList = async () => {
+        const loadProductTypeListAction = async () => {
+            setShowLoading(true);
+            const response = await productService.getAllProductTypes();
+            if (response){
+                const result = [];
+                for (const item of response){
+                    result.push(item.product_type);
+                }
+                setProductTypeList(result);
+            }
+        }
+        await loadProductTypeListAction();
+        setShowLoading(false);
+    }
 
     const loadSelectedProductType = async (productType: string) => {
         const loadSelectedProductTypeAction = async () => {

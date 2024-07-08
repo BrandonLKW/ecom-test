@@ -2,12 +2,12 @@ import { createContext, useEffect, useState } from 'react' ;
 import { Route, Routes } from 'react-router-dom';
 import * as userService from "../util/user-service";
 import NavBar from '../src/components/NavBar';
+import MainPage from './pages/MainPage/MainPage';
 import ProductPage from './pages/ProductPage/ProductPage';
 import OrdersPage from './pages/OrdersPage/OrdersPage';
 import { Cart } from '../models/Cart';
 import { User } from '../models/User';
 import "./App.css";
-import MainPage from './pages/MainPage/MainPage';
 
 export const UserContext = createContext(new User());
 
@@ -67,7 +67,6 @@ function App() {
           <></>}
           <Route path="*" element={<MainPage />}/>
         </Routes>
-        
       </div>
     </UserContext.Provider>
   )
