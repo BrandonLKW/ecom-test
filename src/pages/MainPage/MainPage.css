@@ -1,0 +1,17 @@
+.productpage {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    min-height: 80vh;
+    max-height: 80vh;
+    min-width: 85vw;
+    max-width: 85vw;
+    margin-left: 5vw;
+    margin-right: 5vw;
+    margin-top: 10vh;
+    padding-top: 5vh;
+    padding-bottom: 5vh;
+    background-color: white;
+    overflow: auto;
+}

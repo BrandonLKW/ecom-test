@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { UserContext } from "../App";
 import * as orderService from '../../util/order-service';
 import * as productService from "../../util/product-service";
-import { Alert, AppBar, Box, Button, Dialog, Toolbar, Tooltip, IconButton, Typography, Menu, MenuItem, Container } from "@mui/material"
+import { AppBar, Box, Button, Toolbar, Tooltip, IconButton, Typography, Menu, MenuItem, Container } from "@mui/material"
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import LoginFormModal from "./Modal/LoginFormModal";
 import SignUpFormModal from "./Modal/SignUpFormModal";
@@ -15,8 +15,9 @@ import { User } from "../../models/User";
 import { Order } from "../../models/Order";
 import { OrderItem } from "../../models/OrderItem";
 
-const pages = ['Home', 'Products'];
-const adminPages = ['Home', 'Products', 'Orders', 'History'];
+const pages = ['Home', 'Products']; //for unlogged users, baseline options
+const userPages = ['Orders']; //additional options for logged users
+const adminPages = ['Orders', 'History']; //additional options for superusers
 const settings = ['Logout'];
 
 type NavBarProps = {
@@ -28,7 +29,6 @@ type NavBarProps = {
 export default function NavBar({ cartItemList, setCartItemList, setUser }: NavBarProps){
     const navigate = useNavigate();
     const user = React.useContext(UserContext);
-    const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
     const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
     const [showLoginModal, setShowLoginModal] = React.useState<boolean>(false);
     const [showSignupModal, setShowSignupModal] = React.useState<boolean>(false);
@@ -37,12 +37,7 @@ export default function NavBar({ cartItemList, setCartItemList, setUser }: NavBa
     const [message, setMessage] = React.useState<string>("");
     const [messageType, setMessageType] = React.useState<string>("");
 
-    const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
-        setAnchorElNav(event.currentTarget);
-    };
-
     const handleCloseNavMenu = (event: React.MouseEvent<HTMLElement>) => {
-        setAnchorElNav(null);
         navigatePage(event.currentTarget.outerText);
     };
 
@@ -55,6 +50,7 @@ export default function NavBar({ cartItemList, setCartItemList, setUser }: NavBa
         switch (event.currentTarget.outerText.toUpperCase()){
             case "LOGOUT":
                 setUser(new User());
+                setCartItemList([]);
                 break;
             default:
                 break;
@@ -143,7 +139,7 @@ export default function NavBar({ cartItemList, setCartItemList, setUser }: NavBa
             <Container maxWidth="xl">
                 <Toolbar disableGutters>
                     <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-                        {adminPages.map((page) => (
+                        {pages.map((page) => (
                             <Button
                                 key={page}
                                 onClick={handleCloseNavMenu}
@@ -151,6 +147,28 @@ export default function NavBar({ cartItemList, setCartItemList, setUser }: NavBa
                                 {page}
                             </Button>
                         ))}
+                        {user.account_type === "PUBLIC" ?
+                            userPages.map((page) => (
+                            <Button
+                                key={page}
+                                onClick={handleCloseNavMenu}
+                                sx={{ my: 2, color: 'white', display: 'block' }}>
+                                {page}
+                            </Button>
+                        ))
+                        :
+                        <></>}
+                        {user.account_type === "RESTRICTED" ?
+                            adminPages.map((page) => (
+                            <Button
+                                key={page}
+                                onClick={handleCloseNavMenu}
+                                sx={{ my: 2, color: 'white', display: 'block' }}>
+                                {page}
+                            </Button>
+                        ))
+                        :
+                        <></>}
                     </Box>
                     <Box sx={{ flexGrow: 0 }}>
                         <Tooltip title="View Cart">

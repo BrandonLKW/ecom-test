@@ -7,6 +7,7 @@ import OrdersPage from './pages/OrdersPage/OrdersPage';
 import { Cart } from '../models/Cart';
 import { User } from '../models/User';
 import "./App.css";
+import MainPage from './pages/MainPage/MainPage';
 
 export const UserContext = createContext(new User());
 
@@ -57,10 +58,14 @@ function App() {
           <Route path="/products" element={<ProductPage cartItemList={cartItemList} setCartItemList={saveCart}/>}/>
           {user.user_id !== "0" ? 
             <Route path="/orders" element={<OrdersPage setCartItemList={saveCart}/>}
-            {...user.account_type === "RESTRICTED" ? <Route path="/history"/> : <></>}/> 
+            {...user.account_type === "RESTRICTED" 
+            ? 
+            <Route path="/history"/> 
+            : 
+            <></>}/> 
           : 
           <></>}
-          <Route path="*" element={<ProductPage cartItemList={cartItemList} setCartItemList={saveCart}/>}/>
+          <Route path="*" element={<MainPage />}/>
         </Routes>
         
       </div>
