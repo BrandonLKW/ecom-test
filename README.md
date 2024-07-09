@@ -1,6 +1,6 @@
 # React + TypeScript + Vite + PGSQL
 
-public domain: https://ecom-test-a62s.onrender.com/products  
+public domain: https://ecom-test-a62s.onrender.com
 github repo: https://github.com/BrandonLKW/ecom-test  
 planning tool (used initially, does not reflect project's current progress): https://trello.com/b/HyHKmy2a/raid-project
 
